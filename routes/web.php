@@ -16,6 +16,7 @@ $router->get('/', function () use ($router) {
 });
 
 
-$router->get('/xx', ){
-    return "l";
-});
+$router->get('/xx', 'Irbatch@index');
+
+$router->get('/batch/imagetodownload', 'Irbatch@getImageToDownload');
+
