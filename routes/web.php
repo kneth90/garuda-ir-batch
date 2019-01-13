@@ -17,6 +17,15 @@ $router->get('/', function () use ($router) {
 
 
 $router->get('/xx', 'Irbatch@index');
+$router->get('/tes', function(){
+    $arr = array();
+
+    $arr[1] = 'x';
+    $arr[2] = 'x';
+
+    return $arr;
+});
 
 $router->get('/batch/imagetodownload', 'Irbatch@getImageToDownload');
+$router->get('/batch/imagetoupload', 'Irbatch@getImageToUpload');
 
