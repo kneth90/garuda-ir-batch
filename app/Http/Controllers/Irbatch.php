@@ -23,8 +23,12 @@ class Irbatch extends Controller
     }
 
     public function do_upload_json(){
-        if(isset($_POST['date'])){
-            
+        if(isset($_POST['date']) AND $_FILES['json_file']){
+            $file = $_FILES['json_file'];
+            $t_date = str_replace("-", "", $_POST['date']);
+
+            $path_to_save = env("PATH_PHOTO_DISPLAY", "") . "/" . $t_date . "/" . $file['name'];
+            move_uploaded_file($file['tmp_name'], $path_to_save);
         }
     }
 
