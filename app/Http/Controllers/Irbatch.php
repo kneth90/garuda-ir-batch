@@ -37,9 +37,13 @@ class Irbatch extends Controller
             $t_date = str_replace("-", "", $_GET['date']);
             $t_date_string = $_GET['date'];
             $t_date_plus1 = str_replace( "-", "",date("Y-m-d", strtotime($t_date_string . " +1 DAY")));
+            $t_date_plus2 = str_replace( "-", "",date("Y-m-d", strtotime($t_date_string . " +2 DAY")));
+            $t_date_plus3 = str_replace( "-", "",date("Y-m-d", strtotime($t_date_string . " +3 DAY")));
             $t_date_min1 = str_replace("-", "", date("Y-m-d", strtotime($t_date_string . " -1 DAY")));
             $PHOTO_PATH = env("PATH_PHOTO_DISPLAY", "") . "/" . $t_date;
             $PHOTO_PATH_PLUS1 = env("PATH_PHOTO_DISPLAY", "") . "/" . $t_date_plus1;
+            $PHOTO_PATH_PLUS2 = env("PATH_PHOTO_DISPLAY", "") . "/" . $t_date_plus2;
+            $PHOTO_PATH_PLUS3 = env("PATH_PHOTO_DISPLAY", "") . "/" . $t_date_plus3;
             $PHOTO_PATH_MIN1 = env("PATH_PHOTO_DISPLAY", "") . "/" . $t_date_min1;
             $arr_ret = array();
 
@@ -59,6 +63,26 @@ class Irbatch extends Controller
                 $t_json = str_replace(".jpg", ".json", $img);
                 if (!file_exists($t_json)) {
                     $t_file_name_only = str_replace($PHOTO_PATH_PLUS1 . "/", "", $t_json);
+                    array_push($arr_ret, $t_file_name_only);
+                }
+            }
+
+            $images_plus2 = glob($PHOTO_PATH_PLUS2 . '/*.{jpg}', GLOB_BRACE);
+
+            foreach ($images_plus2 as $img) {
+                $t_json = str_replace(".jpg", ".json", $img);
+                if (!file_exists($t_json)) {
+                    $t_file_name_only = str_replace($PHOTO_PATH_PLUS1 . "/", "", $t_json);
+                    array_push($arr_ret, $t_file_name_only);
+                }
+            }
+
+            $images_plus3 = glob($PHOTO_PATH_PLUS3 . '/*.{jpg}', GLOB_BRACE);
+
+            foreach ($images_plus3 as $img) {
+                $t_json = str_replace(".jpg", ".json", $img);
+                if (!file_exists($t_json)) {
+                    $t_file_name_only = str_replace($PHOTO_PATH_PLUS3. "/", "", $t_json);
                     array_push($arr_ret, $t_file_name_only);
                 }
             }
