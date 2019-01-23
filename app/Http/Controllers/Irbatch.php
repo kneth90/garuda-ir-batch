@@ -35,7 +35,12 @@ class Irbatch extends Controller
     public function getImageToUpload(){
         if(isset($_GET['date'])) {
             $t_date = str_replace("-", "", $_GET['date']);
+            $t_date_string = $_GET['date'];
+            $t_date_plus1 = str_replace( "-", "",date("Y-m-d", strtotime($t_date_string . " +1 DAY")));
+            $t_date_min1 = str_replace("-", "", date("Y-m-d", strtotime($t_date_string . " -1 DAY")));
             $PHOTO_PATH = env("PATH_PHOTO_DISPLAY", "") . "/" . $t_date;
+            $PHOTO_PATH_PLUS1 = env("PATH_PHOTO_DISPLAY", "") . "/" . $t_date_plus1;
+            $PHOTO_PATH_MIN1 = env("PATH_PHOTO_DISPLAY", "") . "/" . $t_date_min1;
             $arr_ret = array();
 
             $images = glob($PHOTO_PATH . '/*.{jpg}', GLOB_BRACE);
@@ -46,7 +51,26 @@ class Irbatch extends Controller
                     $t_file_name_only = str_replace($PHOTO_PATH . "/", "", $t_json);
                     array_push($arr_ret, $t_file_name_only);
                 }
+            }
 
+            $images_plus1 = glob($PHOTO_PATH_PLUS1 . '/*.{jpg}', GLOB_BRACE);
+
+            foreach ($images_plus1 as $img) {
+                $t_json = str_replace(".jpg", ".json", $img);
+                if (!file_exists($t_json)) {
+                    $t_file_name_only = str_replace($PHOTO_PATH_PLUS1 . "/", "", $t_json);
+                    array_push($arr_ret, $t_file_name_only);
+                }
+            }
+
+            $images_min1 = glob($PHOTO_PATH_MIN1 . '/*.{jpg}', GLOB_BRACE);
+
+            foreach ($images_min1 as $img) {
+                $t_json = str_replace(".jpg", ".json", $img);
+                if (!file_exists($t_json)) {
+                    $t_file_name_only = str_replace($PHOTO_PATH_MIN1 . "/", "", $t_json);
+                    array_push($arr_ret, $t_file_name_only);
+                }
             }
 
             return $arr_ret;
@@ -71,6 +95,7 @@ class Irbatch extends Controller
                 ->join("report_photo", "rdd.report_detail_id", "=", "report_photo.report_id")
                 ->where("visit.start_datetime", ">=", "$start_date 00:00:00")
                 ->where("visit.start_datetime", "<=", "$end_date 23:59:59");
+
 
             $res = $res->get();
 
