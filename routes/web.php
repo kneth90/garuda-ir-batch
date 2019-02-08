@@ -29,6 +29,7 @@ $router->get('/tes', function(){
 $router->get('/batch/imagetodownload', 'Irbatch@getImageToDownload');
 $router->get('/batch/imagetoupload', 'Irbatch@getImageToUpload');
 $router->post('/batch/sendJson', 'Irbatch@do_upload_json');
+$router->post('/batch/send_facing_data', 'Irbatch@send_facing_data');
 
 
 

@@ -22,6 +22,39 @@ class Irbatch extends Controller
         return "index";
     }
 
+    public function send_facing_data(){
+        if(isset($_POST['data_facing'])){
+            $res_product_ir_label = $this->db->table("product_ir_label")
+                ->select("product_label", "product_id")
+                ->get();
+            $res_product_ir_label = $res_product_ir_label->keyBy("product_label");
+            $res_product_ir_label = $res_product_ir_label->map(function($value){
+                return $value->product_id;
+            });
+
+            $data = $_POST['data_facing'];
+            $data = json_decode($data);
+
+            $visit_id = $data->visit_id;
+
+            foreach ($data->data as $key=>$value){
+                $category = $key;
+                $data_per_category = $value;
+
+                foreach ($data_per_category as $key_2 => $value_2){
+                    if(isset($res_product_ir_label[$key_2])) {
+                        echo "INSERT INTO report_facing (visit_id, product_id, value_facing) VALUES(" . $visit_id . ", " . $res_product_ir_label[$key_2] . ", " . $value_2 . ")";
+                        $this->db->table("report_facing_product")
+                                    ->insert(["visit_id" => $visit_id, "product_id" => $res_product_ir_label[$key_2] , "value_facing" => $value_2]);
+                    }
+                    else{
+                        echo $key_2 . ' label tdk tersedia di DB';
+                    }
+                }
+            }
+        }
+    }
+
     public function do_upload_json(){
         if(isset($_POST['date']) AND $_FILES['json_file']){
             $file = $_FILES['json_file'];
@@ -120,8 +153,8 @@ class Irbatch extends Controller
                 ->where("visit.start_datetime", ">=", "$start_date 00:00:00")
                 ->where("visit.start_datetime", "<=", "$end_date 23:59:59");
 
-
             $res = $res->get();
+
 
             foreach ($res as $v){
                 $t_display_object =  array();
@@ -136,9 +169,7 @@ class Irbatch extends Controller
 
                 $arr_ret[$v->visit_id]->report_display[$v->category_id]->add_photos($v->photo_row_number, $v->photo_column_number, $v->photo_path);
 
-
             }
-            //return response()->json($res);
             return response()->json($arr_ret);
         }
         else{
