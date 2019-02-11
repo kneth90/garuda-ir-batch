@@ -154,8 +154,8 @@ class Irbatch extends Controller
                 ->join("report_display_header as rdh", "visit.visit_id", "=", "rdh.visit_id")
                 ->join("report_display_detail as rdd", "rdh.report_header_id", "=", "rdd.report_header_id")
                 ->join("report_photo", "rdd.report_detail_id", "=", "report_photo.report_id")
-                ->where("visit.start_datetime", ">=", "$date 13:00:00")
-                ->where("visit.start_datetime", "<=", "$date 13:59:59");
+                ->where("visit.start_datetime", ">=", "$date 00:00:00")
+                ->where("visit.start_datetime", "<=", "$date 23:59:59");
 
             $res = $res->get();
 
