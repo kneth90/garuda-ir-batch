@@ -44,8 +44,12 @@ class Irbatch extends Controller
                 foreach ($data_per_category as $key_2 => $value_2){
                     if(isset($res_product_ir_label[$key_2])) {
                         echo "INSERT INTO report_facing (visit_id, product_id, value_facing) VALUES(" . $visit_id . ", " . $res_product_ir_label[$key_2] . ", " . $value_2 . ")";
-                        $this->db->table("report_facing_product")
-                                    ->insert(["visit_id" => $visit_id, "product_id" => $res_product_ir_label[$key_2] , "value_facing" => $value_2]);
+
+
+                        /*$this->db->table("report_facing_product")
+                                    ->insert(["visit_id" => $visit_id, "product_id" => $res_product_ir_label[$key_2] , "value_facing" => $value_2]);*/
+
+                        $this->db->insert("INSERT INTO report_facing_product (visit_id, product_id, value_facing) VALUES(?,?,?) ON DUPLICATE KEY UPDATE value_facing = ?", [$visit_id, $res_product_ir_label[$key_2], $value_2, $value_2]);
                     }
                     else{
                         echo $key_2 . ' label tdk tersedia di DB';
@@ -90,50 +94,76 @@ class Irbatch extends Controller
                 }
             }
 
-            $images_plus1 = glob($PHOTO_PATH_PLUS1 . '/*.{jpg}', GLOB_BRACE);
-
-            foreach ($images_plus1 as $img) {
-                $t_json = str_replace(".jpg", ".json", $img);
-                if (!file_exists($t_json)) {
-                    $t_file_name_only = str_replace($PHOTO_PATH_PLUS1 . "/", "", $t_json);
-                    array_push($arr_ret, $t_file_name_only);
-                }
-            }
-
-            $images_plus2 = glob($PHOTO_PATH_PLUS2 . '/*.{jpg}', GLOB_BRACE);
-
-            foreach ($images_plus2 as $img) {
-                $t_json = str_replace(".jpg", ".json", $img);
-                if (!file_exists($t_json)) {
-                    $t_file_name_only = str_replace($PHOTO_PATH_PLUS1 . "/", "", $t_json);
-                    array_push($arr_ret, $t_file_name_only);
-                }
-            }
-
-            $images_plus3 = glob($PHOTO_PATH_PLUS3 . '/*.{jpg}', GLOB_BRACE);
-
-            foreach ($images_plus3 as $img) {
-                $t_json = str_replace(".jpg", ".json", $img);
-                if (!file_exists($t_json)) {
-                    $t_file_name_only = str_replace($PHOTO_PATH_PLUS3. "/", "", $t_json);
-                    array_push($arr_ret, $t_file_name_only);
-                }
-            }
-
-            $images_min1 = glob($PHOTO_PATH_MIN1 . '/*.{jpg}', GLOB_BRACE);
-
-            foreach ($images_min1 as $img) {
-                $t_json = str_replace(".jpg", ".json", $img);
-                if (!file_exists($t_json)) {
-                    $t_file_name_only = str_replace($PHOTO_PATH_MIN1 . "/", "", $t_json);
-                    array_push($arr_ret, $t_file_name_only);
-                }
-            }
+//            $images_plus1 = glob($PHOTO_PATH_PLUS1 . '/*.{jpg}', GLOB_BRACE);
+//
+//            foreach ($images_plus1 as $img) {
+//                $t_json = str_replace(".jpg", ".json", $img);
+//                if (!file_exists($t_json)) {
+//                    $t_file_name_only = str_replace($PHOTO_PATH_PLUS1 . "/", "", $t_json);
+//                    array_push($arr_ret, $t_file_name_only);
+//                }
+//            }
+//
+//            $images_plus2 = glob($PHOTO_PATH_PLUS2 . '/*.{jpg}', GLOB_BRACE);
+//
+//            foreach ($images_plus2 as $img) {
+//                $t_json = str_replace(".jpg", ".json", $img);
+//                if (!file_exists($t_json)) {
+//                    $t_file_name_only = str_replace($PHOTO_PATH_PLUS1 . "/", "", $t_json);
+//                    array_push($arr_ret, $t_file_name_only);
+//                }
+//            }
+//
+//            $images_plus3 = glob($PHOTO_PATH_PLUS3 . '/*.{jpg}', GLOB_BRACE);
+//
+//            foreach ($images_plus3 as $img) {
+//                $t_json = str_replace(".jpg", ".json", $img);
+//                if (!file_exists($t_json)) {
+//                    $t_file_name_only = str_replace($PHOTO_PATH_PLUS3. "/", "", $t_json);
+//                    array_push($arr_ret, $t_file_name_only);
+//                }
+//            }
+//
+//            $images_min1 = glob($PHOTO_PATH_MIN1 . '/*.{jpg}', GLOB_BRACE);
+//
+//            foreach ($images_min1 as $img) {
+//                $t_json = str_replace(".jpg", ".json", $img);
+//                if (!file_exists($t_json)) {
+//                    $t_file_name_only = str_replace($PHOTO_PATH_MIN1 . "/", "", $t_json);
+//                    array_push($arr_ret, $t_file_name_only);
+//                }
+//            }
 
             return $arr_ret;
         }
         else{
             return null;
+        }
+    }
+
+    public function getImageToUpload2(){
+        if(isset($_GET['start']) AND isset($_GET['end'])) {
+            ini_set("memory_limit", "1024M");
+
+            $start_date = $_GET['start'];   $end_date = $_GET['end'];
+
+            $arr_ret = array();
+
+            $res = $this->db->table("visit")
+                ->select($this->db->raw("date(start_datetime) as date_visit,rdh.category_id, photo_path"))
+                ->join("report_display_header as rdh", "visit.visit_id", "=", "rdh.visit_id")
+                ->join("report_display_detail as rdd", "rdh.report_header_id", "=", "rdd.report_header_id")
+                ->join("report_photo", "rdd.report_detail_id", "=", "report_photo.report_id")
+                ->where("visit.start_datetime", ">=", "$start_date 13:00:00")
+                ->where("visit.start_datetime", "<=", "$end_date 13:59:59");
+
+            $res = $res->get();
+
+            foreach ($res as $v) {
+                array_push($arr_ret, array('date' => $v->date_visit, "category" => $v->category_id,  "photo" => $v->photo_path));
+            }
+
+            return $res;
         }
     }
 
