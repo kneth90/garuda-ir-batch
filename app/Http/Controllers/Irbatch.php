@@ -142,10 +142,10 @@ class Irbatch extends Controller
     }
 
     public function getImageToUpload2(){
-        if(isset($_GET['start']) AND isset($_GET['end'])) {
+        if(isset($_GET['date'])) {
             ini_set("memory_limit", "1024M");
 
-            $start_date = $_GET['start'];   $end_date = $_GET['end'];
+            $date = $_GET['date'];
 
             $arr_ret = array();
 
@@ -154,16 +154,19 @@ class Irbatch extends Controller
                 ->join("report_display_header as rdh", "visit.visit_id", "=", "rdh.visit_id")
                 ->join("report_display_detail as rdd", "rdh.report_header_id", "=", "rdd.report_header_id")
                 ->join("report_photo", "rdd.report_detail_id", "=", "report_photo.report_id")
-                ->where("visit.start_datetime", ">=", "$start_date 13:00:00")
-                ->where("visit.start_datetime", "<=", "$end_date 13:59:59");
+                ->where("visit.start_datetime", ">=", "$date 13:00:00")
+                ->where("visit.start_datetime", "<=", "$date 13:59:59");
 
             $res = $res->get();
 
             foreach ($res as $v) {
-                array_push($arr_ret, array('date' => $v->date_visit, "category" => $v->category_id,  "photo" => $v->photo_path));
+                $t_file_json = str_replace(".jpg", ".json", $v->photo_path);
+                if(file_exists(env("PATH_PHOTO_DISPLAY"). $t_file_json)) {
+                    array_push($arr_ret, array('date' => $v->date_visit, "category" => $v->category_id, "photo" => $t_file_json));
+                }
             }
 
-            return $res;
+            return $arr_ret;
         }
     }
 
