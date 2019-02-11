@@ -161,7 +161,8 @@ class Irbatch extends Controller
 
             foreach ($res as $v) {
                 $t_file_json = str_replace(".jpg", ".json", $v->photo_path);
-                if(file_exists(env("PATH_PHOTO_DISPLAY"). $t_file_json)) {
+                $t_file_json = env("PATH_PHOTO_DISPLAY") . "/" .$t_file_json;
+                if(file_exists($t_file_json)) {
                     array_push($arr_ret, array('date' => $v->date_visit, "category" => $v->category_id, "photo" => $t_file_json));
                 }
             }
