@@ -11,6 +11,8 @@
 |
 */
 
+use App\Http\Controllers\Datautil;
+
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
@@ -31,6 +33,16 @@ $router->get('/batch/imagetoupload', 'Irbatch@getImageToUpload');
 $router->get('/batch/imagetoupload2', 'Irbatch@getImageToUpload2');
 $router->post('/batch/sendJson', 'Irbatch@do_upload_json');
 $router->post('/batch/send_facing_data', 'Irbatch@send_facing_data');
+
+$router->get("/datautil[/{id}]", function($id=0){
+    $t = new Datautil();
+    return $t->index($id);
+});
+
+$router->post("/datautil[/{id}]", function($id=0){
+    $t = new Datautil();
+    return $t->index($id);
+});
 
 
 
