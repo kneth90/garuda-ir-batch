@@ -18,6 +18,9 @@ class Datautil extends BaseController
         if($data_id == 1){
             return $this->get_customer_id_to_store();
         }
+        else if($data_id == 2){
+            return $this->get_product_bosnetid_to_productid();
+        }
         elseif($data_id == 101){
             return $this->set_customer_id_to_store_by_json();
         }
@@ -35,6 +38,20 @@ class Datautil extends BaseController
         return $arr_ret;
     }
 
+
+    public function get_product_bosnetid_to_productid(){
+        $res = $this->db->table("product")
+                    ->select("bosnet_id", "product_id")
+                    ->where("bosnet_id", "<>", 0)
+                    ->get();
+        $res = $res->keyBy("bosnet_id")->map(function($item, $key){
+            return $item->product_id;
+        });
+
+        return $res;
+    }
+
+
     private function set_customer_id_to_store_by_json(){
         if(isset($_POST['data'])) {
             $res_product = $this->db->table("product")
@@ -50,8 +67,8 @@ class Datautil extends BaseController
             foreach ($data as $v) {
                 foreach ($v->store_id as $w) {
                     if(isset($res_product[$v->product_code])){
-                        //echo "INSERT INTO product_store (product_id, store_id, standard_oos) VALUES (" . $res_product[$v->product_code] .", " . $w .", 3) \n";
-                        $t_res_insert = $this->db->insert("INSERT INTO product_store (product_id, store_id, standard_oos) VALUES (?,?,?) ON DUPLICATE KEY UPDATE product_id = ? , store_id = ?", [$res_product[$v->product_code], $w, 3, $res_product[$v->product_code], $w]);
+                        echo "INSERT INTO product_store (product_id, store_id, standard_oos) VALUES (" . $res_product[$v->product_code] .", " . $w .", 3) \n";
+                        //$t_res_insert = $this->db->insert("INSERT INTO product_store (product_id, store_id, standard_oos) VALUES (?,?,?) ON DUPLICATE KEY UPDATE product_id = ? , store_id = ?", [$res_product[$v->product_code], $w, 3, $res_product[$v->product_code], $w]);
                         //echo $t_res_insert->toSql();
                     }
                     else{
@@ -60,6 +77,13 @@ class Datautil extends BaseController
 
                 }
             }
+        }
+    }
+
+    private function set_report_selling(){
+        if(isset($_POST['data'])) {
+            var_dump($_POST['data']);
+
         }
     }
 }

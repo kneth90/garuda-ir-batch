@@ -31,6 +31,7 @@ class Irbatch extends Controller
             $res_product_ir_label = $res_product_ir_label->map(function($value){
                 return $value->product_id;
             });
+            
 
             $data = $_POST['data_facing'];
             $data = json_decode($data);
