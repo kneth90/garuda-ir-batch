@@ -24,6 +24,9 @@ class Datautil extends BaseController
         elseif($data_id == 101){
             return $this->set_customer_id_to_store_by_json();
         }
+        elseif($data_id == 102){
+            return $this->set_report_selling();
+        }
     }
 
     private function get_customer_id_to_store(){
@@ -81,6 +84,7 @@ class Datautil extends BaseController
     }
 
     private function set_report_selling(){
+        echo "Te";
         if(isset($_POST['data'])) {
             var_dump($_POST['data']);
 
