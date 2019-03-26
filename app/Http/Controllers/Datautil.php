@@ -86,7 +86,13 @@ class Datautil extends BaseController
     private function set_report_selling(){
         echo "Te";
         if(isset($_POST['data'])) {
-            var_dump($_POST['data']);
+            $data = $_POST['data'];
+
+            foreach ($data as $v){
+                $this->db->table("report_selling")
+                        ->updateOrInsert(['tanggal' => $v->tanggal, 'costumer_id' => $v->costumer_id, 'product' => $v->product]
+                                        , ['sales_value' => $v->sales_value, 'sales_unit' => $v->sales_unit]);
+            }
 
         }
     }
