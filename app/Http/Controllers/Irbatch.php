@@ -22,6 +22,35 @@ class Irbatch extends Controller
         return "index";
     }
 
+    public function send_display_data(){
+        if(isset($_POST['data_display'])){
+            $data  = json_decode($_POST["data_display"]);
+
+            $query = "INSERT INTO report_display_compliance (visit_id, category_id, is_comply) VALUES ";
+            $i = 0;
+            $sprintf_format = " ('%s', %d, %d) ";
+            foreach ($data as $v){
+                $t_visit_id = $v->visit_id;
+                $t_category_id = $v->category_id;
+                $t_is_comply = $v->is_comply ? 1 :0;
+
+                if($i == 0){
+                    $i = 1;
+                }else{
+                    $query .= ",";
+                }
+
+                $query .= sprintf($sprintf_format, $v->visit_id, $v->category_id, $v->is_comply);
+
+            }
+            $query .= " ON DUPLICATE KEY UPDATE is_comply = VALUES(is_comply)";
+
+            echo $query . " <br/>";
+            $this->db->insert($query);
+            echo date("Y-m-d H:i:s");
+        }
+    }
+
     public function send_facing_data(){
         if(isset($_POST['data_facing'])){
             $res_product_ir_label = $this->db->table("product_ir_label")
@@ -69,6 +98,8 @@ class Irbatch extends Controller
             move_uploaded_file($file['tmp_name'], $path_to_save);
         }
     }
+
+
 
     public function getImageToUpload(){
         if(isset($_GET['date'])) {
@@ -142,6 +173,48 @@ class Irbatch extends Controller
         }
     }
 
+    public function get_visit_to_display_batch(){
+        $start_date = $_GET['start'];
+        $end_date = $_GET['end'];
+
+        $arr_ret = array();
+        $res = $this->db->table("report_visit_display_photo")
+                        ->where("tanggal", ">=", $start_date)
+                        ->where("tanggal", "<=", $end_date)
+                        ->get();
+        foreach ($res as $v){
+            if(!isset($arr_ret[$v->visit_id])){
+                $arr_ret[$v->visit_id]["visit_id"] = $v->visit_id;
+                $arr_ret[$v->visit_id]["store_id"] = $v->store_id;
+                $arr_ret[$v->visit_id]["surveyor_id"] = $v->surveyor_id;
+                $arr_ret[$v->visit_id]["date"] = $v->tanggal;
+            }
+
+            if(!isset($arr_ret[$v->visit_id]["data"][$v->category_id])){
+                $i_row = $v->photo_row_size;
+                $i_col = $v->photo_column_size;
+
+                $arr_ret[$v->visit_id]["data"][$v->category_id]["category_id"] = $v->category_id;
+
+                for($i=0; $i < $i_col; $i++){
+                    for($j = 0; $j < $i_row; $j++){
+                        $arr_ret[$v->visit_id]["data"][$v->category_id]["photo"][$i][$j] = null;
+                    }
+                }
+            }
+
+
+            $col_number = $v->photo_column_number-1;
+            $row_number = $v->photo_row_number-1;
+
+            $arr_ret[$v->visit_id]["data"][$v->category_id]["photo"][$col_number][$row_number] = $v->photo_path;
+
+        }
+
+        //return $res;
+        return $arr_ret;
+    }
+
     public function getImageToUpload2(){
         if(isset($_GET['date'])) {
             ini_set("memory_limit", "1024M");
@@ -185,14 +258,18 @@ class Irbatch extends Controller
                 ->join("report_display_header as rdh", "visit.visit_id", "=", "rdh.visit_id")
                 ->join("report_display_detail as rdd", "rdh.report_header_id", "=", "rdd.report_header_id")
                 ->join("report_photo", "rdd.report_detail_id", "=", "report_photo.report_id")
-                ->where("visit.start_datetime", ">=", "$start_date 00:00:00")
-                ->where("visit.start_datetime", "<=", "$end_date 23:59:59");
+                ->where("visit.start_datetime", ">=", "$start_date")
+                ->where("visit.start_datetime", "<=", "$end_date");
 
             $res = $res->get();
 
 
             foreach ($res as $v){
                 $t_display_object =  array();
+
+//                if($v->visit_id == 'V.166.8788.19040113475893'){
+//                    var_dump($v);
+//                }
 
                 if(!isset($arr_ret[$v->visit_id])){
                     $arr_ret[$v->visit_id] = new Report_display($v->visit_id , $category_list, $v->date_visit);

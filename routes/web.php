@@ -33,6 +33,9 @@ $router->get('/batch/imagetoupload', 'Irbatch@getImageToUpload');
 $router->get('/batch/imagetoupload2', 'Irbatch@getImageToUpload2');
 $router->post('/batch/sendJson', 'Irbatch@do_upload_json');
 $router->post('/batch/send_facing_data', 'Irbatch@send_facing_data');
+$router->post('/batch/send_display_data', 'Irbatch@send_display_data');
+$router->get('/batch/get_report_visit_display', 'Irbatch@get_visit_to_display_batch');
+
 
 $router->get("/datautil[/{id}]", function($id=0){
     $t = new Datautil();

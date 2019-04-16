@@ -27,6 +27,25 @@ class Datautil extends BaseController
         elseif($data_id == 102){
             return $this->set_report_selling();
         }
+        elseif($data_id == 103){
+            return $this->set_target_selling();
+        }
+        else if($data_id == 3){
+            return $this->get_product_meta_data();
+        }
+    }
+
+
+    private function get_product_meta_data(){
+        $arr_ret = array();
+        $res = $this->db->table("product_view_ir_label_to_id as l")
+                        ->select("l.product_label", "p.*")
+                        ->join("product_view_1 as p" ,"l.product_id", "p.product_id")
+                        ->get();
+
+        $res = $res->keyBy("product_label");
+
+        return $res;
     }
 
     private function get_customer_id_to_store(){
@@ -52,6 +71,43 @@ class Datautil extends BaseController
         });
 
         return $res;
+    }
+
+    private function set_target_selling(){
+        if(isset($_POST['data'])){
+            $data = json_decode($_POST['data']);
+
+            $res_product = $this->db->table("product")
+                                ->select("product_id", "product_code")
+                                ->get();
+            $res_product = $res_product->keyBy("product_code");
+            $res_product = $res_product->map(function($item, $key){
+                return $item->product_id;
+            });
+
+            $query = "INSERT INTO target_selling (customer_id, product_id , year, month, target) VALUES ";
+            $i = 0;
+            $sprintf_format = " ('%s', %d , %d, %d, %d) ";
+
+            foreach ($data as $v){
+                if(isset($res_product[$v->product_code])) {
+                    $product_id = $res_product[$v->product_code];
+                    if ($i == 0) {
+                        $i = 1;
+                    } else {
+                        $query .= ",";
+                    }
+                    $query .= sprintf($sprintf_format, $v->costumer_id, $product_id, $v->year, $v->month, $v->target_sales);
+                }
+            }
+            $query .= " ON DUPLICATE KEY UPDATE target = VALUES(target)";
+
+            //echo $query . " <br/>";
+            $this->db->insert($query);
+        }
+        else{
+            echo "xx";
+        }
     }
 
 
@@ -82,6 +138,7 @@ class Datautil extends BaseController
             }
         }
     }
+
 
     private function set_report_selling(){
         echo "Te";
