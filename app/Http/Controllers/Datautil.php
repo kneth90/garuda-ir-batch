@@ -104,6 +104,7 @@ class Datautil extends BaseController
 
             //echo $query . " <br/>";
             if($i > 0)  $this->db->insert($query);
+            else echo "tidak ada data";
         }
         else{
             echo "xx";
