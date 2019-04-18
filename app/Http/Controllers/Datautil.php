@@ -103,7 +103,7 @@ class Datautil extends BaseController
             $query .= " ON DUPLICATE KEY UPDATE target = VALUES(target)";
 
             //echo $query . " <br/>";
-            $this->db->insert($query);
+            if($i > 0)  $this->db->insert($query);
         }
         else{
             echo "xx";
