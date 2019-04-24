@@ -69,22 +69,37 @@ class Irbatch extends Controller
 
             foreach ($data->data as $key=>$value){
                 $category = $key;
-                $data_per_category = $value;
+                $data_per_category = $value->data;
+                $data_total_per_category = $value->totalshare;
 
                 foreach ($data_per_category as $key_2 => $value_2){
                     if(isset($res_product_ir_label[$key_2])) {
-                        echo "INSERT INTO report_facing (visit_id, product_id, value_facing) VALUES(" . $visit_id . ", " . $res_product_ir_label[$key_2] . ", " . $value_2 . ")";
+                        //echo "INSERT INTO report_facing (visit_id, product_id, value_facing) VALUES(" . $visit_id . ", " . $res_product_ir_label[$key_2] . ", " . $value_2 . ")";
+
+
 
 
                         /*$this->db->table("report_facing_product")
                                     ->insert(["visit_id" => $visit_id, "product_id" => $res_product_ir_label[$key_2] , "value_facing" => $value_2]);*/
 
-                        $this->db->insert("INSERT INTO report_facing_product (visit_id, product_id, value_facing) VALUES(?,?,?) ON DUPLICATE KEY UPDATE value_facing = ?", [$visit_id, $res_product_ir_label[$key_2], $value_2, $value_2]);
+
+
+
+
+                        $this->db->insert("INSERT INTO report_facing_product (visit_id, product_id, value_facing) 
+                                      VALUES(?,?,?) ON DUPLICATE KEY UPDATE value_facing = ?", [$visit_id, $res_product_ir_label[$key_2], $value_2->obj_count, $value_2->obj_count]);
+
+                        $this->db->insert("INSERT INTO report_facing_share_product (visit_id, product_id, value_share) 
+                                      VALUES(?,?,?) ON DUPLICATE KEY UPDATE value_share = ?", [$visit_id, $res_product_ir_label[$key_2], $value_2->share, $value_2->share]);
+
                     }
                     else{
-                        echo $key_2 . ' label tdk tersedia di DB';
+                        echo $key_2 . ' label tdk tersedia di DB <br/>';
+                        echo "\n";
                     }
                 }
+                $this->db->insert("INSERT INTO report_facing_share_total_product (visit_id, category_id, value) 
+                                      VALUES(?,?,?) ON DUPLICATE KEY UPDATE value = ?", [$visit_id, $category, $data_total_per_category, $data_total_per_category]);
             }
         }
     }
