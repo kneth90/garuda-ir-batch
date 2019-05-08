@@ -27,6 +27,9 @@ class Datautil extends BaseController
         elseif($data_id == 102){
             return $this->set_report_selling();
         }
+        elseif($data_id == 702){
+            return $this->set_report_selling_2();
+        }
         elseif($data_id == 103){
             return $this->set_target_selling();
         }
@@ -85,7 +88,7 @@ class Datautil extends BaseController
                 return $item->product_id;
             });
 
-            $query = "INSERT INTO target_selling (customer_id, product_id , year, month, target) VALUES ";
+            $query = "INSERT INTO target_selling_tanpa_fk (customer_id, product_id , year, month, target) VALUES ";
             $i = 0;
             $sprintf_format = " ('%s', %d , %d, %d, %d) ";
 
@@ -156,5 +159,27 @@ class Datautil extends BaseController
 
         }
     }
+
+    private function set_report_selling_2(){
+        if(isset($_POST['data'])) {
+            $data = json_decode($_POST['data']);
+            //var_dump($data);
+            foreach ($data as $v){
+                $t_key = $v[0];
+                $t_costumer_id = $v[1];
+                $t_product_id = $v[2];
+                $t_tanggal = $v[3];
+                $t_sales_value = $v[4];
+                $t_sales_unit = $v[5];
+                if($t_product_id != "null"){
+                    $this->db->table("report_selling_new")
+                        ->updateOrInsert(['id' => $t_key, 'tanggal' => $t_tanggal, 'costumer_id' => ''.$t_costumer_id, 'product' => $t_product_id]
+                            , ['sales_value' => $t_sales_value, 'sales_unit' => $t_sales_unit]);
+                }
+            }
+            echo "done send";
+        }
+    }
+
 }
 
