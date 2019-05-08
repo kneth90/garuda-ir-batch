@@ -172,7 +172,7 @@ class Datautil extends BaseController
                 $t_sales_value = $v[4];
                 $t_sales_unit = $v[5];
                 if($t_product_id != "null"){
-                    $this->db->table("report_selling_new")
+                    $this->db->table("report_selling")
                         ->updateOrInsert(['id' => $t_key, 'tanggal' => $t_tanggal, 'costumer_id' => ''.$t_costumer_id, 'product' => $t_product_id]
                             , ['sales_value' => $t_sales_value, 'sales_unit' => $t_sales_unit]);
                 }
