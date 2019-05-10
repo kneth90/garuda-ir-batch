@@ -254,6 +254,9 @@ class Irbatch extends Controller
                 if(!file_exists($t_file_json)) {
                     array_push($arr_ret, array('date' => $v->date_visit, "category" => $v->category_id, "photo" => $t_file_json));
                 }
+                else{
+                    echo "ada";
+                }
             }
 
             return $arr_ret;
