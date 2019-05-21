@@ -135,7 +135,7 @@ class Irbatch extends Controller
 
             foreach ($images as $img) {
                 $t_json = str_replace(".jpg", ".json", $img);
-                if (!file_exists($t_json)) {
+                if(true){//if (!file_exists($t_json)) {
                     $t_file_name_only = str_replace($PHOTO_PATH . "/", "", $t_json);
                     array_push($arr_ret, $t_file_name_only);
                 }
