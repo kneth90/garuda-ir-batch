@@ -40,7 +40,8 @@ class Irbatch extends Controller
                     $query .= ",";
                 }
 
-                $query .= sprintf($sprintf_format, $v->visit_id, $v->category_id, $v->is_comply);
+                //$query .= sprintf($sprintf_format, $v->visit_id, $v->category_id, $v->is_comply);
+                $query .= sprintf($sprintf_format, $t_visit_id, $t_category_id, $t_is_comply);
 
             }
             $query .= " ON DUPLICATE KEY UPDATE is_comply = VALUES(is_comply)";
