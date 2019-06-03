@@ -27,8 +27,12 @@ class Datautil extends BaseController
         elseif($data_id == 102){
             return $this->set_report_selling();
         }
+        /* yagn dipake sekarang */
         elseif($data_id == 702){
             return $this->set_report_selling_2();
+        }
+        elseif($data_id == 601){
+            return $this->update_batch_log();
         }
         elseif($data_id == 103){
             return $this->set_target_selling();
@@ -179,6 +183,33 @@ class Datautil extends BaseController
             }
             echo "done send";
         }
+    }
+
+    private function update_batch_log(){
+        header('Content-Type: application/json');
+        $arr_return = array("status" => "failed", "ext" => array());
+        $operation = isset($_POST['operation']) ? $_POST['operation'] : "-1";
+
+
+        if($operation == "START_BATCH_SELLING"){
+            $id = $this->db->table("batch_log")
+                    ->insertGetId(["type" => "REPORT_SELLING", "start_time" => date("Y-m-d H:i:s")]);
+            $arr_return["status"] = "success";
+            $arr_return["ext"]["row_id"] =  $id;
+
+        }
+        else if($operation == "END_BATCH_SELLING"){
+            $log_id = $_POST['log_id'];
+            $end_datetime = date("Y-m-d H:i:s");
+
+            $this->db->table("batch_log")
+                    ->where("id", $log_id)
+                    ->update(["end_time" => $end_datetime]);
+
+            $arr_return["status"] = "success";
+        }
+
+        return $arr_return;
     }
 
 }
