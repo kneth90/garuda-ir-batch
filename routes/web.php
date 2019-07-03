@@ -12,6 +12,7 @@
 */
 
 use App\Http\Controllers\Datautil;
+use App\Http\Controllers\Irbatch2;
 
 $router->get('/', function () use ($router) {
     return $router->app->version();
@@ -35,6 +36,13 @@ $router->post('/batch/sendJson', 'Irbatch@do_upload_json');
 $router->post('/batch/send_facing_data', 'Irbatch@send_facing_data');
 $router->post('/batch/send_display_data', 'Irbatch@send_display_data');
 $router->get('/batch/get_report_visit_display', 'Irbatch@get_visit_to_display_batch');
+
+$router->post('/batch2[/{report}]', function($report=0){
+    if($report == "visit_display_by_date"){
+        $t =  new Irbatch2();
+        return $t->get_visit_to_display_batch();
+    }
+});
 
 
 $router->get("/datautil[/{id}]", function($id=0){
