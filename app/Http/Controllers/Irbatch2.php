@@ -54,9 +54,14 @@ class Irbatch2 extends BaseController
 
 
 
-                if($icount > 0)    $this->db->insert($qry_facing);
+                if($icount > 0)    {
+                    $this->db->insert($qry_facing);
+                    echo $qry_facing;
+                }
+
                 $this->db->insert($qry_display);
-                
+                echo $qry_display;
+
             }
         }
         echo date("Y-m-d H:i:s");
