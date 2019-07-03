@@ -27,7 +27,12 @@ class Irbatch2 extends BaseController
     public function send_ir_data(){
         if (isset($_POST['data'])){
             $data = $_POST['data'];
-            var_dump($data);
+
+            foreach ($data as $v => $key){
+                echo "key " . $key;
+                echo " data : " . $data;
+            }
+
         }
 
     }
