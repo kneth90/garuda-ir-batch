@@ -26,14 +26,40 @@ class Irbatch2 extends BaseController
 
     public function send_ir_data(){
         if (isset($_POST['data'])){
-            $data = $_POST['data'];
+            $data = json_decode($_POST['data']);
+            //var_dump($data);
 
-            foreach ($data as $v => $key){
-                echo "key " . $key;
-                echo " data : " . $data;
+            foreach ($data as $key=>$v){
+                $visit_id = $v->visit_id;
+                $category_id = $v->category_id;
+                $facing_data = $v->facing_data;
+
+                $planogram_data = $v->planogram_data;
+                $planogram_value = $planogram_data->display_status ? 1 : 0;
+
+                $qry_facing = "INSERT INTO report_facing_product (visit_id, product_id, value_facing) VALUES ";
+                $icount = 0;
+                foreach ($facing_data as $k_facing => $v_facing){
+                    $sprintf_format = " ('%s', %d, %d) ";
+                    if($icount > 0) $qry_facing .= ", ";
+                    $qry_facing .= sprintf($sprintf_format, $visit_id, $k_facing, $v_facing);
+
+                    $icount++;
+                    //$qry = "INSERT INTO report_facing_product (visit_id, product_id, value_facing) VALUES ('$visit_id',$k_facing ,$v_facing) ON DUPLICATE KEY UPDATE value_facing = $v_facing";
+                    //echo $qry . "<br/>\n";
+                }
+                $qry_facing .= " ON DUPLICATE KEY UPDATE value_facing = VALUES(value_facing)";
+
+                $qry_display = "INSERT INTO report_display_compliance (visit_id, category_id, is_comply) VALUES  ('$visit_id', $category_id, $planogram_value) ON DUPLICATE KEY UPDATE is_comply = $planogram_value";
+
+
+
+                if($icount > 0)    $this->db->insert($qry_facing);
+                $this->db->insert($qry_display);
+                
             }
-
         }
+        echo date("Y-m-d H:i:s");
 
     }
 
