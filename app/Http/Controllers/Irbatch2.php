@@ -48,7 +48,7 @@ class Irbatch2 extends BaseController
                     //array_push($arr_result, new Data_display($v->visit_id, $v->photo_column_size, $v->photo_row_size));
                     if(!is_null($t_current_display_data))    array_push($arr_result, $t_current_display_data);
 
-                    $t_current_display_data = new Data_display($v->visit_id, $v->photo_column_size, $v->photo_row_size);
+                    $t_current_display_data = new Data_display($v->visit_id, $v->tanggal, $v->photo_column_size, $v->photo_row_size);
                 }
 
                 if(!isset($t_current_display_data->grid_display[$v->category_id])){
@@ -67,10 +67,12 @@ class Irbatch2 extends BaseController
 
 class Data_display{
     var $visit_id;
+    var $tanggal;
     var $grid_display = array();
 
-    public function  __construct($visit_id, $col_size, $row_size){
+    public function  __construct($visit_id, $tanggal, $col_size, $row_size){
         $this->visit_id = $visit_id;
+        $this->tanggal = $tanggal;
         //$this->grid_display = new Grid_display($col_size, $row_size);
         $this->grid_display = array();
     }
