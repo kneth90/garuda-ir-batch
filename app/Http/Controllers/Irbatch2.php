@@ -24,6 +24,14 @@ class Irbatch2 extends BaseController
         return "index";
     }
 
+    public function send_ir_data(){
+        if (isset($_POST['data'])){
+            $data = $_POST['data'];
+            var_dump($data);
+        }
+
+    }
+
     public function get_visit_to_display_batch(){
         $date = isset($_POST['date']) ? $_POST['date'] : -1;
 
