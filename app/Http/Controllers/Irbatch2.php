@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 //use Illuminate\Support\Facades\DB as DB;
 
 use Laravel\Lumen\Routing\Controller as BaseController;
+use Symfony\Component\VarDumper\Cloner\Data;
 
 class Irbatch2 extends BaseController
 {
@@ -66,6 +67,33 @@ class Irbatch2 extends BaseController
         }
         echo date("Y-m-d H:i:s");
 
+    }
+
+    public function get_display_by_visit(){
+        header('Content-Type: application/json');
+        $visit_id = isset($_POST['visit_id']) ? $_POST['visit_id'] : -1;
+
+        if($visit_id != -1){
+            $res_visit = $this->db->table("report_visit_display_photo")
+                                ->where("visit_id", "=", $visit_id)
+                                ->orderBy("category_id")
+                                ->get();
+
+            if(count($res_visit) > 0){
+                $t_first = $res_visit[0];
+                $t_display_data = new Data_display($t_first->visit_id, $t_first->tanggal, $t_first->photo_column_size, $t_first->photo_row_size);
+
+                foreach ($res_visit as $v){
+                    if(!isset($t_display_data->grid_display[$v->category_id])){
+                        $t_display_data->add_grid($v->photo_column_size, $v->photo_row_size, $v->category_id);
+                    }
+
+                    $t_display_data->set_photo($v->photo_column_number, $v->photo_row_number, $v->photo_path, $v->category_id);
+                }
+
+                echo json_encode($t_display_data);
+            }
+        }
     }
 
     public function get_visit_to_display_batch(){

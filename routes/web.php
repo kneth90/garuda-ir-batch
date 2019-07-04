@@ -46,6 +46,10 @@ $router->post('/batch2[/{report}]', function($report=0){
         $t =  new Irbatch2();
         $t->send_ir_data();
     }
+    else if($report == "get_display_by_visit"){
+        $t =  new Irbatch2();
+        return $t->get_display_by_visit();
+    }
 });
 
 
