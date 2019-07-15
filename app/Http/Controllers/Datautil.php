@@ -80,6 +80,7 @@ class Datautil extends BaseController
         return $res;
     }
 
+
     private function set_target_selling(){
         if(isset($_POST['data'])){
             $data = json_decode($_POST['data']);
@@ -92,7 +93,8 @@ class Datautil extends BaseController
                 return $item->product_id;
             });
 
-            $query = "INSERT INTO target_selling_tanpa_fk (customer_id, product_id , year, month, target) VALUES ";
+            //$query = "INSERT INTO target_selling_tanpa_fk (customer_id, product_id , year, month, target) VALUES ";
+            $query = "INSERT INTO target_selling (customer_id, product_id , year, month, target) VALUES ";
             $i = 0;
             $sprintf_format = " ('%s', %d , %d, %d, %d) ";
 
